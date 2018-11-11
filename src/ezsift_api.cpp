@@ -11,7 +11,7 @@ extern "C" int ExtractFeaturesFromRgba(float* Outputxs,float* Outputys,int Outpu
 	auto ExtractDescriptor = false;
 	ezsift::Image<unsigned char> Image;
 	std::list<ezsift::SiftKeypoint> Keypoints;
-	ezsift::sift_cpu( Image, Keypoints, ExtractDescriptor );
+	//ezsift::sift_cpu( Image, Keypoints, ExtractDescriptor );
 
 	return Keypoints.size();
 }
