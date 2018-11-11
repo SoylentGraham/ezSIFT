@@ -31,10 +31,12 @@ class Image {
     int w;
     int h;
     T *data;
+	bool ownData;	//	allow use of a buffer without trying to delete it for in-place images
 
     Image();
 
-    Image(int _w, int _h);
+	Image(int _w, int _h);
+	Image(int _w, int _h,T* ExistingData);
 
     // Copy construction function
     Image(const Image<T> &img);
@@ -70,6 +72,7 @@ Image<T>::Image()
     w = 0;
     h = 0;
     data = NULL;
+	ownData = true;
 }
 
 template <typename T>
@@ -78,6 +81,17 @@ Image<T>::Image(int _w, int _h)
     w = _w;
     h = _h;
     data = new T[w * h];
+	ownData = true;
+}
+	
+	
+template <typename T>
+Image<T>::Image(int _w, int _h,T* ExistingData)
+{
+	w = _w;
+	h = _h;
+	data = ExistingData;
+	ownData = false;
 }
 
 // Copy construction function
@@ -87,13 +101,14 @@ Image<T>::Image(const Image<T> &img)
     w = img.w;
     h = img.h;
     data = new T[w * h];
+	ownData = true;
     memcpy(data, img.data, w * h * sizeof(T));
 }
 
 template <typename T>
 Image<T>::~Image()
 {
-    if (data) {
+    if (data && ownData) {
         delete[] data;
         data = NULL;
     }
@@ -113,6 +128,7 @@ void Image<T>::init(int _w, int _h)
     w = _w;
     h = _h;
     data = new T[w * h];
+	ownData = true;
 }
 
 template <typename T>
@@ -120,10 +136,11 @@ void Image<T>::reinit(int _w, int _h)
 {
     w = _w;
     h = _h;
-    if (data) {
+    if (data && ownData) {
         delete[] data;
     }
     data = new T[w * h];
+	ownData = true;
 }
 
 template <typename T>
@@ -132,7 +149,8 @@ void Image<T>::release()
     w = 0;
     h = 0;
     if (data) {
-        delete[] data;
+		if ( ownData )
+	        delete[] data;
         data = nullptr;
     }
 }
